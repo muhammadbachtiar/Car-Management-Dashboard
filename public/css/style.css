@@ -1,0 +1,101 @@
+body{
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.fontAwesome {
+    font-family: 'Helvetica', FontAwesome, sans-serif;
+}
+
+#sidebar-fix {
+    z-index: 2;
+    background-color: #0D28A6;
+}
+
+#sidebar-fix .sidebar-heading {
+    padding: 0.875rem 1.25rem;
+    font-size: 1.2rem;
+    border-color: #0D28A6;
+}
+
+#sidebar-fix .list-group .list-group-item {
+    background-color: #0D28A6;
+    border-color: #0D28A6;
+    color: white;
+    padding: 17px;
+}
+
+.icon-Header{
+    background: #CFD4ED;
+    color: white;
+    padding: 17px;
+}
+.btn-first{
+    background: #0D28A6 ;
+    color: white ;
+    font-weight: 700;
+    border-radius: 2px  ;
+    border: #0D28A6 solid 1px;
+    padding: 8px 12px;
+    min-width: 87px;
+}
+
+.btn-second{
+  background: white ;
+  color: #0D28A6 ;
+  font-weight: 700;
+  border-radius: 2px  ;
+  border: #0D28A6 solid 1px;
+  padding: 8px 12px;
+  min-width: 87px;
+}
+
+.btn-second:hover, .btn-first:hover{
+    border-color: gray;
+    background-color: #CFD4ED;
+}
+
+.badgeUser {
+    background-color: #CFD4ED;
+  color: black;
+  border-radius: 50%;
+  padding: 8px 9px;
+  font-size: x-small;
+}
+
+.page-content {
+    
+}
+
+nav .breadcrumb a {
+    text-decoration: none;
+    color: black;
+}
+
+.btn-add {
+    background: #0D28A6;
+    color: white;
+    padding: 8px 12px;
+    margin: 0 5%;
+}
+
+.btn-delete{
+    color: #FA2C5A;
+    border-color: #FA2C5A;
+    padding: 8px 12px;
+    border-radius: 2px;
+    width: 100%;
+}
+
+.btn-edit{
+    color: white;
+    border-color: #5CB85F;
+    background-color: #5CB85F;
+    padding: 8px 12px;
+    border-radius: 2px;
+    width: 100%;
+}
+
+.badgeWhite{
+    color: #8A8A8A;
+    margin: 10px;
+}
