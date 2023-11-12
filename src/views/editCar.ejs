@@ -18,15 +18,23 @@
         <div class="border-end" id="sidebar-fix">
             <div class="sidebar-heading border-bottom"><a class="list-group-item" href="/"><div class="icon-Header"></div></a></div>
             <div class="list-group list-group-flush">
-                <a class="list-group-item list-group-item-action p-3 text-center" href="#!"><i class="fa-solid fa-house"></i></a>
-                <a class="list-group-item list-group-item-action p-3 text-center" href="/"><i class="fa-solid fa-car-side"></i></a>
+                <div class="list-group">
+                    <a class="list-group-item list-group-item-action text-center" href="/" style="padding: 6px;">
+                      <i class="fa-solid fa-house"></i>
+                      <span style="font-size: 10px; display: block;">Dashboard</span>
+                    </a>
+                    <a class="list-group-item list-group-item-action text-center" href="/cars" style="padding: 6px;">
+                      <i class="fa-solid fa-car-side"></i>
+                      <span style="font-size: 10px; display: block;">Cars</span>
+                    </a>
+                </div>
             </div>
         </div>
         <div class="border-end" id="sidebar-wrapper">
             <div class="sidebar-heading border-bottom"><div class="icon-Header"></div></div>
             <div class="list-group list-group-flush">
-                <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">CARS</a>
-                <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/">LIST CARS</a>
+                <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/">CARS</a>
+                <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/cars">List Cars</a>
             </div>
         </div>
         <!-- Page content wrapper-->
@@ -58,76 +66,74 @@
                 </div>
             </nav>
             <!-- Page content-->
-            <% const isCarExist = Boolean(cars.length) %>
+            <% const isCarExist = Boolean(cars) %>
             <% if(!isCarExist){  %>
                 <h2> No Car Found </h2>
             <% }else { %>
-                <% cars.map(({id, name, type, rentPerDay, timeUpdate, image})=> { %>
-                    <div class="container-fluid page-content">
-                        <div class="container" style="min-width: 98%;">
-                            <div class="row justify-content-start my-4">
-                                <div class="col-12 align-self-center">
-                                    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-                                        <ol class="breadcrumb">
-                                          <li class="breadcrumb-item"><b><a href="#">Cars</a></b></li>
-                                          <li class="breadcrumb-item"><b><a href="/cars">List Cars</a></b></li>
-                                          <li class="breadcrumb-item active" aria-current="page">Edit Car</li>
-                                        </ol>
-                                      </nav>
-                                </div>
+                <div class="container-fluid page-content">
+                    <div class="container" style="min-width: 98%;">
+                        <div class="row justify-content-start my-4">
+                            <div class="col-12 align-self-center">
+                                <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><b><a href="#">Cars</a></b></li>
+                                        <li class="breadcrumb-item"><b><a href="/cars">List Cars</a></b></li>
+                                        <li class="breadcrumb-item active" aria-current="page">Edit Car</li>
+                                    </ol>
+                                    </nav>
                             </div>
-                            <div class="row justify-content-between my-4">
-                                <div class="col-12">
-                                    <h1 class="fs-4 fw-semibold align-self-center">Edit Car <%= name %></h1>
-                                </div>
+                        </div>
+                        <div class="row justify-content-between my-4">
+                            <div class="col-12">
+                                <h1 class="fs-4 fw-semibold align-self-center">Edit Car <%= cars.name %></h1>
                             </div>
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="card">
-                                      <div class="card-body col-12 col-md-7 col-xl-5">
-                                        <form method="POST" action="/cars/<%= id %>?_method=PUT" id="carForm" enctype="multipart/form-data">
-                                            <div class="mb-3 row">
-                                                <label for="inputPassword" class="col-sm-3 col-form-label">Nama</label>
-                                                <div class="col-sm-9">
-                                                <input type="text" class="form-control" id="name" name="name" placeholder="Nama" value="<%= name %>" required>
-                                                </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body col-12 col-md-7 col-xl-5">
+                                    <form method="POST" action="/cars/<%= cars.id %>?_method=PUT" id="carForm" enctype="multipart/form-data">
+                                        <div class="mb-3 row">
+                                            <label for="inputPassword" class="col-sm-3 col-form-label">Nama</label>
+                                            <div class="col-sm-9">
+                                            <input type="text" class="form-control" id="name" name="name" placeholder="Nama" value="<%= cars.name %>" required>
                                             </div>
-                                            <div class="mb-3 row">
-                                                <label for="inputPassword" class="col-sm-3 col-form-label">Sewa Per Hari</label>
-                                                <div class="col-sm-9">
-                                                <input type="number" class="form-control" id="rentPerDay" name="rentPerDay" placeholder="Sewa Per Hari" value="<%= rentPerDay %>" required>
-                                                </div>
+                                        </div>
+                                        <div class="mb-3 row">
+                                            <label for="inputPassword" class="col-sm-3 col-form-label">Sewa Per Hari</label>
+                                            <div class="col-sm-9">
+                                            <input type="number" class="form-control" id="rentPerDay" name="rentPerDay" placeholder="Sewa Per Hari" value="<%= cars.rent_per_day %>" required>
                                             </div>
-                                            <div class="mb-3 row">
-                                                <label for="inputPassword" class="col-sm-3 col-form-label">Ukuran</label>
-                                                <div class="col-sm-9">
-                                                    <select class="form-select" id="type" name="type">
-                                                        <option value="Small" <%= type === 'Small' ? 'selected' : '' %>>Small</option>
-                                                        <option value="Medium" <%= type === 'Medium' ? 'selected' : '' %>>Medium</option>
-                                                        <option value="Large" <%= type === 'Large' ? 'selected' : '' %>>Large</option>
-                                                    </select>
-                                                </div>
+                                        </div>
+                                        <div class="mb-3 row">
+                                            <label for="inputPassword" class="col-sm-3 col-form-label">Ukuran</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-select" id="type" name="type">
+                                                    <option value="Small" <%= cars.type === 'Small' ? 'selected' : '' %>>Small</option>
+                                                    <option value="Medium" <%= cars.type === 'Medium' ? 'selected' : '' %>>Medium</option>
+                                                    <option value="Large" <%= cars.type === 'Large' ? 'selected' : '' %>>Large</option>
+                                                </select>
                                             </div>
-                                            <div class="mb-3 row">
-                                                <label for="inputPassword" class="col-sm-3 col-form-label">Foto Baru</label>
-                                                <div class="col-sm-9">
-                                                <input type="file" class="form-control" id="image" name="image" placeholder="Foto" required>
-                                                </div>
+                                        </div>
+                                        <div class="mb-3 row">
+                                            <label for="inputPassword" class="col-sm-3 col-form-label">Foto Baru</label>
+                                            <div class="col-sm-9">
+                                            <input type="file" class="form-control" id="image" name="image" placeholder="Foto">
                                             </div>
-                                        </form>
-                                      </div>
+                                        </div>
+                                    </form>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row my-1 align-items-end" style="min-height: 30vh;">
-                                <div class="col d-flex">
-                                    <a href="/" id="btn-chooseCar" class="btn-second btn mx-1"><b>Cancel</b></a>
-                                    <button type="submit" id="btn-chooseCar" form="carForm" class="btn-first btn mx-1"><b>Save</b></button>
-                                </div>
+                        </div>
+                        <div class="row my-1 align-items-end" style="min-height: 30vh;">
+                            <div class="col d-flex">
+                                <a href="/" id="btn-chooseCar" class="btn-second btn mx-1"><b>Cancel</b></a>
+                                <button type="submit" id="btn-chooseCar" form="carForm" class="btn-first btn mx-1"><b>Save</b></button>
                             </div>
                         </div>
                     </div>
-                <% }) %>
+                </div>
             <% } %>
         </div>
     </div>

@@ -17,15 +17,23 @@
         <div class="border-end" id="sidebar-fix">
             <div class="sidebar-heading border-bottom"><a class="list-group-item" href="/"><div class="icon-Header"></div></a></div>
             <div class="list-group list-group-flush">
-                <a class="list-group-item list-group-item-action p-3 text-center" href="/"><i class="fa-solid fa-house"></i></a>
-                <a class="list-group-item list-group-item-action p-3 text-center" href="/cars"><i class="fa-solid fa-car-side"></i></a>
+                <div class="list-group">
+                    <a class="list-group-item list-group-item-action text-center" href="/">
+                      <i class="fa-solid fa-house"></i>
+                      <span style="font-size: 10px; display: block;">Dashboard</span>
+                    </a>
+                    <a class="list-group-item list-group-item-action text-center" href="/cars">
+                      <i class="fa-solid fa-car-side"></i>
+                      <span style="font-size: 10px; display: block;">Cars</span>
+                    </a>
+                  </div>
             </div>
         </div>
         <div class="border-end" id="sidebar-wrapper">
             <div class="sidebar-heading border-bottom"><div class="icon-Header"></div></div>
             <div class="list-group list-group-flush">
                 <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/">CARS</a>
-                <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/cars">LIST CARS</a>
+                <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/cars">List Cars</a>
             </div>
         </div>
         <!-- Page content wrapper-->
@@ -84,16 +92,16 @@
                         <% if(!isCarExist){  %>
                             <h2> No Car Found </h2>
                         <% }else { %>
-                            <% cars.map(({id, name, type, rentPerDay, timeUpdate, image})=> { %>
+                            <% cars.map(({id, name, type, rent_per_day, time_update, image_url})=> { %>
                                 <div class="col-12 col-md-6 col-xl-4 my-1" id="<%= id %>">
                                     <div class="card">
                                         <div class="card-body m-3">
-                                            <img src="<%= image %>" class="card-img" alt="Car Image" height="222px">
+                                            <img src="<%= image_url %>" class="card-img" alt="Car Image" height="222px">
                                             <h1 class="fs-6 fw-normal fs-6 fw-medium my-3"><%= name %> / <%= type %></h1>
-                                            <h2 class="card-title fs-5 fw-bolder">Rp.<%= rentPerDay.toLocaleString('id-ID') %> / hari</h2>
+                                            <h2 class="card-title fs-5 fw-bolder">Rp.<%= rent_per_day.toLocaleString('id-ID') %> / hari</h2>
                                             <ul id="carDescription-nav" class="p-0">
                                                 <li class="list-group-item d-flex justify-content-star align-items-center">
-                                                    <span class="badgeWhite"><i class="fa-regular fa-clock"></i></span> Updated At <%= new Date(timeUpdate).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) %>
+                                                    <span class="badgeWhite"><i class="fa-regular fa-clock"></i></span> Updated At <%= new Date(time_update).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) %>
                                                 </li>
                                             </ul>
                                             <div class="row my-1">

@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
-import { v4 as uuidv4 } from "uuid";
-import carListData from "./../models/dummyData";
 import cloudinary from "./../config/cloudinaryConfig";
+import { CarsModel } from '../models/Cars';
 
 interface Car {
     id: number;
@@ -12,6 +11,17 @@ interface Car {
     image: string;
   }
 
+///CONTROLLER PAGE VIEW
+const homePage = (req : Request, res: Response)=> {
+    res.status(200).render('home', {})
+}
+
+const addCarPage = (req : Request, res: Response)=> {
+    res.status(200).render('addCar', {})
+}
+
+
+//CONTROLLER UPLOAD IMAGE
 const uploadImage = (req : Request, res: Response)=> {
     if (!req.file) {
         return res.status(400).json({
@@ -36,215 +46,225 @@ const uploadImage = (req : Request, res: Response)=> {
     })
 }
 
-const getListCars = (req : Request, res: Response)=> {
+//FUNCTION UPLOAD IMAGE
+const cloudinaryUpload = async (file : any) => {
+  return new Promise((resolve, reject) => {
+    const filebase64 = file.buffer.toString('base64');
+    const finalFile = `data:${file.mimetype};base64,${filebase64}`;
+    cloudinary.uploader.upload(finalFile, (err: any, result: any) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+};
+
+
+//CONTROLLER CRUD RESPONDS JSON
+const getListCars = async (req : Request, res: Response)=> {
+  const getCarsData = await CarsModel.query().orderBy('id', 'asc') || {};
+
+    const { name = "" } = req.query as { name?: string };
+    const filteredCars = getCarsData.filter(({name: nameValue})=>  nameValue.toLowerCase().includes(name.toLowerCase()))
+
     res.status(201).json({
         message: "Success Get Cars Data",
-        data: carListData,
+        data:  name ?  filteredCars : getCarsData
     })
 }
 
-const getCarsById = (req : Request, res: Response)=> {
-    const getId = req.params.id;
-    const CarsDatafilterById = carListData.filter(({id})=> id === Number(getId) )
+const getCarsById = async (req : Request, res: Response)=> {
+  const getId = req.params.id;
+  const filterById = await CarsModel.query().findById(getId).throwIfNotFound();
 
-    res.status(201).json({
-        message: "Success Get Car Data by ID",
-        data: CarsDatafilterById,
-    })
+  res.status(201).json({
+      message: "Success Get Car Data by ID",
+      data: filterById,
+  })
 }
 
-const postCar = (req : Request, res: Response) => {
-    const newCar : Car = {
-        id: 0,
-        name: "", 
-        type: "", 
-        rentPerDay: 0, 
-        timeUpdate: new Date(),
-        image: ""
-    };
+const postCar = async (req : Request, res: Response) => {
+  try {
+
     if (!req.file) {
-        return res.status(400).json({
-          message: 'Gagal Upload File! File tidak ditemukan.',
-        });
-      }
-    let carId = carListData.length + 1;
-    const filebase64 = req.file.buffer.toString("base64");
-    const file = `data:${req.file.mimetype};base64,${filebase64}`
-
-
-    newCar.name = String(req.body.name);
-    newCar.rentPerDay = Number(req.body.rentPerDay);
-    newCar.type = String(req.body.type);
-    newCar.id = carId;
-    newCar.timeUpdate = new Date();
-
-  cloudinary.uploader.upload(file, (err: { message: any; }, result: { url: string; }) => {
-    if (err) {
-      return res.status(500).json({ msg: err.message });
+      return res.status(400).json({
+        message: 'Gagal Upload File! File tidak ditemukan.',
+      });
     }
 
-    newCar.image = result.url;
+    const { name, rentPerDay, type } = req.body || {};
+    const cloudinaryResult : any = await cloudinaryUpload(req.file);
+    const imageUrl = cloudinaryResult.url;
 
-    carListData.push(newCar);
+    const newObjCarWithId = {
+      name,
+      rent_per_day: rentPerDay,
+      type,
+      image_url: imageUrl,
+      time_update: new Date(),
+    };
+
+
+    await CarsModel.query().insert(newObjCarWithId)
+    const newListCars = await CarsModel.query().orderBy('id', 'asc') || {}
+
 
     res.status(201).json({
       message: "Success Post Car Data",
-      newDataCar: newCar,
-      newListCars: carListData,
+      newDataCar: newObjCarWithId,
+      newListCars: newListCars,
     });
-  });
+  } catch (error : any) {
+    res.status(500).json({ msg: error.message });
+  }
 }
 
-const putCar = (req : Request, res: Response) => {
-    if (!req.file) {
-        return res.status(400).json({
-          message: 'Gagal Upload File! File tidak ditemukan.',
-        });
-      }
-    const carIdToUpdate = Number(req.params.id);
-    const updatedCar = req.body; 
-    const filebase64 = req.file.buffer.toString("base64");
-    const file = `data:${req.file.mimetype};base64,${filebase64}`
-    const carToUpdate = carListData.find(car => car.id === carIdToUpdate);
+const putCar = async (req : Request, res: Response) => {
+  const carIdToUpdate = Number(req.params.id);
+
+  try {
+
+    const carToUpdate = await CarsModel.query().where("id", carIdToUpdate) || {};
+    const { name, rentPerDay, type } = req.body || {};
+    const newListCars = await CarsModel.query().orderBy('id', 'asc') || {}
+
 
     if (!carToUpdate) {
-        return res.status(404).json({ message: "Car not found" });
+      return res.status(404).json({ message: 'Car not found' });
     }
 
-    carToUpdate.name = updatedCar.name;
-    carToUpdate.rentPerDay = updatedCar.rentPerDay;
-    carToUpdate.type = updatedCar.type;
-    carToUpdate.timeUpdate = new Date();
+    const imageUrl = !req.file ? carToUpdate[0].image_url : (await cloudinaryUpload(req.file) as { url: string }).url;
+    
+    const updateObjectCar = {
+      name,
+      rent_per_day: rentPerDay,
+      type,
+      image_url: imageUrl,
+      time_update: new Date(),
+    };
 
-  cloudinary.uploader.upload(file, (err: { message: any; }, result: { url: string; }) => {
-    if (err) {
-      return res.status(500).json({ msg: err.message });
-    }
-
-    carToUpdate.image = result.url;
-
+    await CarsModel.query().update(updateObjectCar).where("id", carIdToUpdate)
 
     res.status(201).json({
       message: "Success Update Car Data",
-      updatedCarId: carIdToUpdate,
-      newListCars: carListData
+      carToUpdate: carToUpdate,
+      newListCars: newListCars
     });
-  });
+
+  } catch (error : any) {
+    res.status(500).json({ msg: error.message });
+  }
+
 }
 
-const deleteCar = (req : Request, res: Response) => {
-    const getId =  req.params.id;
-    let index = carListData.findIndex(car => car.id === Number(getId));
+const deleteCar = async (req : Request, res: Response) => {
+  try {
+    const carId = req.params.id;
+    const DeletedCardata = CarsModel.query().findById(carId).throwIfNotFound()
+    await CarsModel.query().deleteById(carId);
+    const newListCars = await CarsModel.query().orderBy('id', 'asc') || {}
 
-    if (index === -1) return res.status(404).send({ message: 'Car not found' });
+    res.status(200).json({ message: 'Car deleted successfully', DeletedCardata: DeletedCardata, newListCars: newListCars });
 
-    let car = carListData.splice(index, 1)[0];
-
-    res.status(200).send({ message: 'Car deleted successfully', DeletedCardata: car, newListCars: carListData });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
 }
 
 
-const homePage = (req : Request, res: Response)=> {
-    res.status(200).render('home', {})
-}
 
-const addCarPage = (req : Request, res: Response)=> {
-    res.status(200).render('addCar', {})
-}
+//CONTROLLER CRUD RESPONDS VIEW
+const listCar = async (req : Request, res: Response)=> {
+    const getCarsData = await CarsModel.query().orderBy('id', 'asc') || {};
 
-
-const listCar = (req : Request, res: Response)=> {
     const { name = "" } = req.query as { name?: string };
-    const filteredCars = carListData.filter(({name: nameValue})=>  nameValue.toLowerCase().includes(name.toLowerCase()))
+    const filteredCars = getCarsData.filter(({name: nameValue})=>  nameValue.toLowerCase().includes(name.toLowerCase()))
 
     res.status(200).render('carList', {
-        cars: name ?  filteredCars : carListData
+        cars: name ?  filteredCars : getCarsData
     })
 }
 
-const createCar = (req : Request, res: Response)=> {
-    const newId = Number(uuidv4());
+const createCar = async (req : Request, res: Response)=> {
+  try {
+
     if (!req.file) {
-        return res.status(400).json({
-          message: 'Gagal Upload File! File tidak ditemukan.',
-        });
-      }
-    const filebase64 = req.file.buffer.toString("base64");
-    const file = `data:${req.file.mimetype};base64,${filebase64}`
-
-    const { name, rentPerDay, type } = req.body;
-    const newObjCarWithId : Car = {
-        id: newId,
-        name: name,
-        rentPerDay: rentPerDay,
-        type: type,
-        timeUpdate: new Date(),
-        image: ""
+      return res.status(400).json({
+        message: 'Gagal Upload File! File tidak ditemukan.',
+      });
     }
 
-  cloudinary.uploader.upload(file, (err: { message: any; }, result: { url: string; }) => {
-    if (err) {
-      return res.status(500).json({ msg: err.message });
-    }
+    const { name, rentPerDay, type } = req.body || {};
+    const cloudinaryResult : any = await cloudinaryUpload(req.file);
+    const imageUrl = cloudinaryResult.url;
 
-    newObjCarWithId.image = result.url;
+    const newObjCarWithId = {
+      name,
+      rent_per_day: rentPerDay,
+      type,
+      image_url: imageUrl,
+      time_update: new Date(),
+    };
 
-    carListData.push(newObjCarWithId);
+
+    await CarsModel.query().insert(newObjCarWithId)
+
 
     res.status(201).redirect('/cars');
-  });
+  } catch (error : any) {
+    res.status(500).json({ msg: error.message });
+  }
 }
 
-const updateCar = (req : Request, res: Response)=> {
-    const carIdToUpdate = Number(req.params.id);
-    if (!req.file) {
-        return res.status(400).json({
-          message: 'Gagal Upload File! File tidak ditemukan.',
-        });
-      }
-    const filebase64 = req.file.buffer.toString("base64");
-    const file = `data:${req.file.mimetype};base64,${filebase64}`
-    const carToUpdate = carListData.find(car => car.id === carIdToUpdate);
+const updateCar = async (req : Request, res: Response)=> {
+  const carIdToUpdate = Number(req.params.id);
+
+  try {
+
+    const carToUpdate = await CarsModel.query().where("id", carIdToUpdate) || {};
+    const { name, rentPerDay, type } = req.body || {};
+
 
     if (!carToUpdate) {
-        return res.status(404).json({ message: "Car not found" });
+      return res.status(404).json({ message: 'Car not found' });
     }
 
-    const { name, rentPerDay, type } = req.body;
+    const imageUrl = !req.file ? carToUpdate[0].image_url : (await cloudinaryUpload(req.file) as { url: string }).url;
+    
+    const updateObjectCar = {
+      name,
+      rent_per_day: rentPerDay,
+      type,
+      image_url: imageUrl,
+      time_update: new Date(),
+    };
 
-    carToUpdate.name = name;
-    carToUpdate.rentPerDay = rentPerDay;
-    carToUpdate.type = type;
-    carToUpdate.timeUpdate = new Date();
+    await CarsModel.query().update(updateObjectCar).where("id", carIdToUpdate)
 
-    cloudinary.uploader.upload(file, (err: { message: any; }, result: { url: string; }) => {
-    if (err) {
-        return res.status(500).json({ msg: err.message });
-    }
-
-    carToUpdate.image = result.url;
-
-    res.status(201).redirect("/cars")
-    });
+    res.status(201).redirect('/cars');
+  } catch (error : any) {
+    res.status(500).json({ msg: error.message });
+  }
 }
 
-const removeCar = (req: Request, res: Response) => {
-    const getId = req.params.id;
-    const index = carListData.findIndex((car) => car.id === Number(getId));
-  
-    if (index === -1) {
-      return res.status(404).send({ message: 'Car not found' });
+const removeCar = async (req: Request, res: Response) => {
+    try {
+      const carId = req.params.id;
+      await CarsModel.query().deleteById(carId);
+      res.status(200).redirect("/cars");
+
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   
-    carListData.splice(index, 1);
-  
-    res.status(200).redirect("/cars");
   };
   
 
-const getById = (req : Request, res: Response) => {
+const getById = async (req : Request, res: Response) => {
     const getId = req.params.id;
-    const filterById = carListData.filter(({id})=> id === Number(getId) )
+    const filterById = await CarsModel.query().findById(getId).throwIfNotFound();
 
     res.status(200).render('editCar', {
         cars: filterById
