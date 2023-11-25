@@ -1,50 +1,21 @@
-﻿# Car Management Dashboard
+﻿# Car OPEN API Management Dashboard
 
-Car Management Dashboard API and Website.
+Car Management Dashboard OPEN API
 
-## ERD
+## OPEN API DOCUMENTATION
 
-![ERD_IMAGE](./Erd.png)
+![](./Erd.png)
 
-## EndPoint
+## EndPoint OPEN API DOCIMENTATION
+    http://localhost:3000/api-docs
 
-### API
+#### Migration command
+Inpx knex migrate:latest  
 
-- [GET] http://localhost:3000/api/v1/cars => Show list cars data
-- [GET] http://localhost:3000/api/v1/cars?name=name_filter_value => Show list cars data by name filter.
-- [GET] http://localhost:3000/api/v1/cars/:id => Show car data by ID
-- [POST] http://localhost:3000/api/v1/cars => Add new car data
-- [PUT] http://localhost:3000/api/v1/cars/:id => Update car data
-- [DELETE] http://localhost:3000/api/v1/cars/:id => Delete car data by ID
+#### Seeders Command
+npx knex seed:run --specific=users.ts
 
-#### REQ & RES GET LIST
-![get-list](./getList.png)
-
-#### REQ & RES FILTER BY NAME
-![filter-by-name](./filterByName.png)
-
-#### REQ & RES GET BY ID
-![get-by-id](./filterById.png)
-
-#### REQ & RES POST DATA
-![post-data](./createCar.png)
-
-#### REQ & RES PUT DATA
-![put-data](./updateCar.png)
-
-#### REQ & RES DELETE DATA
-![delete-data](./deleteCar.png)
-
-### VIEW
-
-- [GET] http://localhost:3000/cars => Show list cars data
-- [GET] http://localhost:3000/cars?name=:name_filter_value => Show list cars data by brand filter.
-- [GET] http://localhost:3000/cars/:id => Show car data by ID
-- [POST] http://localhost:3000/cars => Add new car data
-- [PUT] http://localhost:3000/cars/:id => Update car data
-- [DELETE] http://localhost:3000/cars/:id Delete car data by ID
-
-### VIEW WEBSITE
-
-![view-website](./vieExample.png)
+#### Superadmin Account
+email : superadmin@gmail.com
+passowrd : superadmin123321
 

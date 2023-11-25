@@ -9,7 +9,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string("type", 50).notNullable();
     table.integer("rent_per_day").notNullable();
     table.string("image_url", 255).notNullable();
-    table.timestamp("time_update").defaultTo(knex.fn.now()).notNullable();
+    table.timestamp("time_updated").defaultTo(knex.fn.now()).notNullable();
   });
 }
 

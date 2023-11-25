@@ -5,13 +5,12 @@ export class CarsModel extends Model {
     name!: string;
     type!: string;
     rent_per_day!: number;
-    image_url!:string;
-    time_update!: Date;
+    image_url!: string;
+    time_updated!: Date;
 
-
-    static get tableName(){
-        return "cars"
+    static get tableName() {
+        return "cars";
     }
 }
 
-export type Cars = ModelObject<CarsModel>
+export type Cars = ModelObject<CarsModel>;
