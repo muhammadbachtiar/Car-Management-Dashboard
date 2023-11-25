@@ -4,13 +4,13 @@ Car Management Dashboard OPEN API
 
 ## OPEN API DOCUMENTATION
 
-![](./Erd.png)
+![OPEN API DOCUMENTATION](./openApiDocument.png)
 
 ## EndPoint OPEN API DOCIMENTATION
     http://localhost:3000/api-docs
 
 #### Migration command
-Inpx knex migrate:latest  
+npx knex migrate:latest  
 
 #### Seeders Command
 npx knex seed:run --specific=users.ts
