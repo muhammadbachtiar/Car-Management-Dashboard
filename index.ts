@@ -1,6 +1,7 @@
 import knex from "knex";
 import { Model } from "objection";
 const express = require("express");
+const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const app = express();
@@ -14,7 +15,7 @@ const methodOverride = require('method-override');
 const knexInstance = knex({
     client: "postgresql",
     connection: {
-        database: "cars_management_6",
+        database: "cars_management_server",
         user: "muhammadbachtiar",
         password: "123456",
         port:5000
@@ -24,6 +25,7 @@ const knexInstance = knex({
 Model.knex(knexInstance);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use(cors());
 app.use(methodOverride('_method'));
 app.use(express.urlencoded({ extended: true }));
 // app.use(bodyParser.json()); 

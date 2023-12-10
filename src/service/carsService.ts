@@ -18,14 +18,14 @@ class CarsService {
         return carData;
       }
 
-      async postCar ( name: string, rentPerDay: number, type: string, imageUrl: string): Promise<any> {
-        const postedCar = this.#carsRepository.postCar(name, rentPerDay, type, imageUrl);
+      async postCar ( name: string, rentPerDay: number, type: string, imageUrl: string, capacity: number, description: string, year: string, available_at: Date, transmission: string, isWithDriver: boolean): Promise<any> {
+        const postedCar = this.#carsRepository.postCar(name, rentPerDay, type, imageUrl, capacity, description, year, available_at, transmission, isWithDriver);
     
         return postedCar;
         }
 
-        async putCar ( id: number | string, name: string, rentPerDay: number, type: string, imageUrl: string): Promise<any> {
-            const updateCar = this.#carsRepository.putCar(id, name, rentPerDay,type,imageUrl)
+        async putCar ( id: number | string, name: string, rentPerDay: number, type: string, imageUrl: string, capacity: number, description: string, year: string, available_at: Date, transmission: string, isWithDriver: boolean): Promise<any> {
+            const updateCar = this.#carsRepository.putCar(id, name, rentPerDay,type,imageUrl, capacity, description, year, available_at, transmission, isWithDriver)
             return updateCar;
         }
 

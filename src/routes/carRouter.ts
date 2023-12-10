@@ -9,7 +9,7 @@ router.get("/", carController.homePage);
 router.get("/addCar", carController.addCarPage);
 
 //API CRUD RESPONDS JSON
-router.get("/api/v1/cars", middlewareAuthorizeCar.isAdminOrSuperAdmin ,carController.getListCars);
+router.get("/api/v1/cars", carController.getListCars);
 router.get("/api/v1/cars/:id", middlewareAuthorizeCar.isAdminOrSuperAdmin ,carController.getCarsById);
 router.post("/api/v1/cars",  [uploadOnMemory.single('image'), middlewareAuthorizeCar.isAdminOrSuperAdmin], carController.postCar);
 router.put("/api/v1/cars/:id", [uploadOnMemory.single('image'), middlewareAuthorizeCar.isAdminOrSuperAdmin], carController.putCar);

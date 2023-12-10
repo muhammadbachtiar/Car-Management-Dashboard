@@ -49,11 +49,11 @@ const postCar = async (req : Request & { user?: any }, res: Response) => {
       });
     }
 
-    const { name, rentPerDay, type } = req.body || {};
+    const { name, rentPerDay, type, capacity , description, year, available_at, transmission, isWithDriver } = req.body || {};
     const cloudinaryResult : any = await cloudinaryUpload(req.file);
     const imageUrl = cloudinaryResult.url;
    
-    const newPostedCar = await new CarsService().postCar(name, rentPerDay, type, imageUrl);
+    const newPostedCar = await new CarsService().postCar(name, rentPerDay, type, imageUrl, capacity , description, year, available_at, transmission, isWithDriver );
     const logActivities = await new LogActivityService().postLogActivity("INSERT", req.user.id, newPostedCar.id, req.user.username, newPostedCar.name);
 
 
@@ -73,7 +73,7 @@ const putCar = async (req : Request & { user?: any }, res: Response) => {
   try {
 
     const carToUpdate = await new CarsService().getCarbyId(carIdToUpdate);
-    const { name, rentPerDay, type } = req.body || {};
+    const { name, rentPerDay, type, capacity , description, year, available_at, transmission, isWithDriver } = req.body || {};
 
 
     if (!carToUpdate) {
@@ -83,7 +83,7 @@ const putCar = async (req : Request & { user?: any }, res: Response) => {
     const imageUrl = !req.file ? carToUpdate.image_url : (await cloudinaryUpload(req.file) as { url: string }).url;
     
 
-    const updatedCarData = await new CarsService().putCar(carIdToUpdate, name, rentPerDay, type, imageUrl)
+    const updatedCarData = await new CarsService().putCar(carIdToUpdate, name, rentPerDay, type, imageUrl, capacity , description, year, available_at, transmission, isWithDriver)
     const logActivities = await new LogActivityService().postLogActivity("UPDATE", req.user.id, carIdToUpdate, req.user.username, updatedCarData[0].name);
 
     res.status(201).json({
